@@ -47,3 +47,27 @@ function addQuizContent(questions) {
 }
 
 addQuizContent(quizData.questions);
+
+form.addEventListener("submit", handleSubmit);
+
+function handleSubmit(e) {
+  e.preventDefault();
+
+  getResult();
+}
+
+function getResult() {
+  const checkedRadioButton = [
+    ...document.querySelectorAll("input[type='radio]:checked"),
+  ];
+
+  const results = checkedRadioButton.map((radioButton) => {
+    const response = quizData.responses.find(
+      (response) => response.id === radioButton.name
+    );
+    return {
+      id: radioButton.name,
+      correct: response.answer === radioButton.value,
+    };
+  });
+}
