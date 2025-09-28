@@ -94,3 +94,20 @@ function showResults(results) {
     quizDescription.textContent = `Bravo  : ${goodResponses.length}/${quizData.questions.length}. 🏆`;
   }
 }
+
+function addColors(results) {
+  results.forEach((response) => {
+    document.getElementById(response.id).style.outline = response.correct
+      ? "3px solid #3da406"
+      : "3px solid #ff6565";
+  });
+}
+
+form.addEventListener("input", resetQuestionHighlight);
+
+function resetQuestionHighlight(e) {
+  if (e.target.matches(".quiz__radio-input")) {
+    const block = document.getElementById(e.target.name);
+    if (block) block.style.outline = "none";
+  }
+}
