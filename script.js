@@ -1,8 +1,8 @@
 import quizData from "./quizData.js";
-// console.log(quizData);
+console.log(quizData);
 
-const form = document.querySelector(".quiz-form");
-const fromSubmitBtn = document.querySelector(".quiz__submit-button");
+const form = document.querySelector(".quiz__form");
+const formSubmitBtn = document.querySelector(".quiz__submit-button");
 
 function addQuizContent(questions) {
   const fragment = document.createDocumentFragment();
@@ -11,6 +11,7 @@ function addQuizContent(questions) {
     const questionBlock = document.createElement("div");
     questionBlock.className = "quiz__question-block";
     questionBlock.id = currentQuestion.id;
+
     const questionText = document.createElement("p");
     questionText.className = "quiz__question";
     questionText.textContent = currentQuestion.question;
@@ -23,15 +24,13 @@ function addQuizContent(questions) {
       const radioInput = document.createElement("input");
       radioInput.type = "radio";
       radioInput.className = "quiz__radio-input";
-      radioInput.id = `
-      ${currentQuestion.id}-${option.value}
-      `;
+      radioInput.id = `${currentQuestion.id}-${option.value}`;
       radioInput.name = currentQuestion.id;
       radioInput.value = option.value;
       radioInput.checked = index === 0;
 
       const label = document.createElement("label");
-      label.className = "quiz-label";
+      label.className = "quiz__label";
       label.htmlFor = radioInput.id;
       label.textContent = option.label;
 
@@ -43,9 +42,8 @@ function addQuizContent(questions) {
     fragment.appendChild(questionBlock);
   });
 
-  form.insertBefore(fragment, fromSubmitBtn);
+  form.insertBefore(fragment, formSubmitBtn);
 }
-
 addQuizContent(quizData.questions);
 
 form.addEventListener("submit", handleSubmit);
@@ -57,17 +55,42 @@ function handleSubmit(e) {
 }
 
 function getResult() {
-  const checkedRadioButton = [
-    ...document.querySelectorAll("input[type='radio]:checked"),
+  const checkedRadioButtons = [
+    ...document.querySelectorAll("input[type='radio']:checked"),
   ];
+  console.log(checkedRadioButtons);
 
-  const results = checkedRadioButton.map((radioButton) => {
+  const results = checkedRadioButtons.map((radioButton) => {
     const response = quizData.responses.find(
       (response) => response.id === radioButton.name
     );
+
     return {
       id: radioButton.name,
       correct: response.answer === radioButton.value,
     };
   });
+  console.log(results);
+  showResults(results);
+  addColors(results);
+}
+
+const quizResultsBox = document.querySelector(".quiz__results");
+const quizDescription = document.querySelector(".quiz__description");
+
+let isResultsBoxShowed = false;
+function showResults(results) {
+  if (!isResultsBoxShowed) {
+    quizResultsBox.style.display = "block";
+    isResultsBoxShowed = true;
+  }
+
+  const goodResponses = results.filter((response) => response.correct === true);
+  const hasFinishedQuiz = goodResponses.length === quizData.responses.length;
+
+  if (!hasFinishedQuiz) {
+    quizDescription.textContent = `Résultat  : ${goodResponses.length}/${quizData.questions.length}, retentez votre chance.`;
+  } else {
+    quizDescription.textContent = `Bravo  : ${goodResponses.length}/${quizData.questions.length}. 🏆`;
+  }
 }
